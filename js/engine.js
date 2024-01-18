@@ -75,14 +75,13 @@ class Game {
             'p': () => Game.player,
             'w': () => new Wall(),
             'b': () => new Box(),
-            'e': () => new Enemy()
 
         }
         // Inserting elements into the map
         const walls = [
             ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
             ['w', '-', '-', '-', '-', '-', '-', '-', '-', 'w'],
-            ['w', '-', 'w', '-', '-', 'w', '-', 'w', 'e', 'w'],
+            ['w', '-', 'w', '-', '-', 'w', '-', 'w', '-', 'w'],
             ['w', '-', 'w', '-', 'w', 'w', '-', 'w', '-', 'w'],
             ['w', '-', 'w', '-', 'p', '-', '-', '-', '-', 'w'],
             ['w', '-', 'w', '-', 'b', '-', '-', '-', '-', 'w'],
@@ -101,7 +100,6 @@ class Game {
     static updateGame(input) {
         // Recieve actions from the user from the keyboard
         if (action[input]) { Game.player.move(action[input]) }
-        World.getElements(Enemy).forEach(e => e.move())
     }
 }
 

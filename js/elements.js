@@ -23,6 +23,7 @@ class MovingElement extends WorldElement {
     }
 
     move(vector, chained = false) {
+        console.log("MovingElement ~ move ~ vector:", vector);
         let newPosition = this.getPosition().add(vector);
         let element = World.getElement(newPosition);
 
@@ -59,18 +60,5 @@ class Box extends MovingElement {
     move(vector) {
         // Check if the position is valid
         return super.move(vector)
-    }
-}
-
-class Enemy extends MovingElement {
-    constructor() {
-        super('👾');
-    }
-
-    move() {
-        // Check if the position is valid
-        let playerPosition = World.getPlayer().getPosition();
-        let distance = this.getPosition().distance(playerPosition);
-        return super.move(distance.maxDirection().vector()) || super.move(distance.minDirection().vector())
     }
 }

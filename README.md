@@ -3,7 +3,7 @@
 ## POC
 
 Requirements:
-- [ ] Implement positions in 3 dimensions
+- [x] Implement positions in 3 dimensions
 - [ ] Make the camera follow the player 
   - [ ] Implement a query that return all the objects in the player's vision field
   - [ ] Adapt the screen to use this query
