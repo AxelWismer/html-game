@@ -23,29 +23,26 @@ class Screen {
             row.map(cell => cell ? cell : '-').join(' ')).join('\n'));
     }
 }
-const action = {
-    '': new Position(0, 0),
-    undefined: new Position(0, 0),
-    'ArrowUp': new Position(0, 1),
-    'ArrowDown': new Position(0, -1),
-    'ArrowLeft': new Position(-1, 0),
-    'ArrowRight': new Position(1, 0)
-}
+
 
 class Controller {
+    static action;
+
     static initialize() {
-        Game.initialize(new Position(10, 10));
-        Screen.drawHTML();
-        Screen.drawLogs();
         window.addEventListener("keydown", function (event) {
             // Do nothing if the event was already processed
             if (event.defaultPrevented) { return; }
-            Game.updateGame(event.key);
-            Screen.drawHTML();
-            Screen.drawLogs();
+            Controller.action = event.key;
+            // Game.updateGame(event.key);
+
             // Cancel the default action to avoid it being handled twice
             event.preventDefault();
         }, true);
     }
+
+    static readActions() {
+        let action = Controller.action;
+        Controller.action = null;
+        return action;
+    }
 }
-Controller.initialize();

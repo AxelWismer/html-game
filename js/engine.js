@@ -63,12 +63,23 @@ class World {
     }
 }
 
+const MOVES = {
+    '': new Position(0, 0),
+    undefined: new Position(0, 0),
+    'ArrowUp': new Position(0, 1),
+    'ArrowDown': new Position(0, -1),
+    'ArrowLeft': new Position(-1, 0),
+    'ArrowRight': new Position(1, 0)
+}
+
 class Game {
     static player;
-
-    static initialize(mapSize) {
+    static count = 0;
+    
+    static initialize(mapSize, refreshRate) {
         World.initialize(mapSize);
         Screen.initialize(mapSize);
+        Controller.initialize();
         Game.player = new Player();
 
         const elements = {
@@ -95,11 +106,21 @@ class Game {
                 World.setElement(elements[cell](), new Position(i, mapSize.y - 1 - j));
             }
         }))
+
+        setInterval(Game.updateGame, refreshRate)
     }
 
-    static updateGame(input) {
+    static updateGame() {
+        const input = Controller.readActions();
         // Recieve actions from the user from the keyboard
-        if (action[input]) { Game.player.move(action[input]) }
+        if (input) { 
+            Game.player.move(MOVES[input]) 
+        }
+        
+        // Update screen
+        Screen.drawHTML();
+        // Screen.drawLogs();
     }
 }
 
+Game.initialize(new Position(10, 10), 100);

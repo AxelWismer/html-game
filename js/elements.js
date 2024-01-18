@@ -23,7 +23,6 @@ class MovingElement extends WorldElement {
     }
 
     move(vector, chained = false) {
-        console.log("MovingElement ~ move ~ vector:", vector);
         let newPosition = this.getPosition().add(vector);
         let element = World.getElement(newPosition);
 
