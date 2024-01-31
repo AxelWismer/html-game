@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=PT+Mono">
+    <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'PT Mono', sans-serif;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        td {
+            text-align: center;
+            cursor: default;
+            width: 11px;
+            display: inline-flex;
+            place-content: center;
+        }
+
+        th {
+            text-align: center;
+            cursor: default; /* Disable cursor on cells */
+        }
+
+        #characterButtons {
+            display: flex;
+            flex-wrap: wrap;  /* Allow buttons to wrap into multiple rows */
+            justify-content: center;  /* Center buttons horizontally */
+            margin-top: 20px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        button {
+            margin: 5px;  /* Adjust margin for better spacing */
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let mapWidth = 10;
+            let mapHeight = 10;
+
+            // const customAlphabet = [
+            //     "█", "▓", "▒", "░", " ",
+            //     "☐", "▣", "⧖", "⊞",
+            //     "☺",
+            //     "═", "║", "╗", "╝", "╚", "╔", "⥥", "▲", "▼"];
+
+            const customAlphabet = ["-", "w", "b", "p"];
+            var selectedCharIndex = 0;
+
+            let isMousePressed = false; // Added variable to track mouse press
+
+            // Function to handle hover events for the top row
+            function handleTopRowHover() {
+                if (isMousePressed) {
+                    const colIndex = this.cellIndex;
+                    const cells = Array.from(document.querySelectorAll(`td:nth-child(${colIndex + 1})`)).slice(1);
+                    cells.forEach(cell => cell.textContent = customAlphabet[selectedCharIndex]);
+                }
+            }
+
+            // Function to handle hover events for the left column
+            function handleLeftColumnHover() {
+                if (isMousePressed) {
+                    const rowIndex = this.parentNode.rowIndex;
+                    const rows = document.querySelectorAll('tr');
+                    const cells = rows[rowIndex].querySelectorAll('td:not(:first-child)');
+                    cells.forEach(cell => cell.textContent = customAlphabet[selectedCharIndex]);
+                }
+            }
+
+            // Function to handle hover events for other cells
+            function handleCellHover() {
+                if (isMousePressed) {
+                    this.textContent = customAlphabet[selectedCharIndex];
+                }
+            }
+
+            // Function to handle button clicks
+            function handleCharButtonClick() {
+                selectedCharIndex = parseInt(this.value);
+            }
+
+            function initializeTable(horizontalCellCount, verticalCellCount){
+                const table = document.querySelector('table');
+
+                while (table.hasChildNodes()) {
+                    table.removeChild(table.firstChild);
+                }
+
+
+                // Initialize the table structure
+                for (let i = 0; i < verticalCellCount + 1; i++) {
+                    const row = document.createElement('tr');
+
+                    for (let j = 0; j < horizontalCellCount + 1; j++) {
+                        const cell = document.createElement('td');
+
+                        if (i === 0 && j === 0) {
+                            // Add an empty cell for the top-left corner
+                            cell.textContent = '';
+                        } else if (i === 0) {
+                            // Add the top row with arrows pointing down
+                            cell.innerHTML = '&darr;'; // down arrow
+                            cell.addEventListener('mousemove', handleTopRowHover); // Change to mousemove
+                        } else if (j === 0) {
+                            // Add the left column with a right arrow
+                            cell.innerHTML = '&rarr;'; // right arrow
+                            cell.addEventListener('mousemove', handleLeftColumnHover); // Change to mousemove
+                        } else {
+                            // Add the main grid cells
+                            cell.textContent = customAlphabet[0]; // Initialize with the first character
+                            cell.addEventListener('mousemove', handleCellHover); // Change to mousemove
+                        }
+
+                        row.appendChild(cell);
+                    }
+                    table.appendChild(row);
+                }
+            }
+
+            function resizeMap() {
+                console.log("resizing")
+                // Get the values from the input fields
+                var widthInput = document.getElementById("width").value;
+                var heightInput = document.getElementById("height").value;
+
+                // Convert the values to numbers
+                mapWidth = parseFloat(widthInput);
+                mapHeight = parseFloat(heightInput);
+
+                // Call your desired function with the input values
+                initializeTable(mapWidth, mapHeight);
+            }
+
+            function mapToJSON(tableId) {
+                const table = document.getElementById(tableId);
+                const map = {
+                    size: {
+                        x: mapWidth,
+                        y: mapHeight
+                    }
+                }
+                
+                const elements = [];
+                for (let row = 1; row < table.rows.length; row++) {
+                    for (let col = 1; col < table.rows[row].cells.length; col++) {
+                    const cell = table.rows[row].cells[col];
+                    const cellValue = cell.innerText || cell.textContent;
+
+                    // TODO: make customAlphabet hold this data
+                    if(cellValue === customAlphabet[0]){
+                        continue;
+                    }
+
+                    const cellInfo = {
+                        type: cellValue.trim(),
+                        position: {
+                        x: col - 1, // Adjust index to start from 1 instead of 0
+                        y: row - 1,
+                        }
+                    };
+
+                    elements.push(cellInfo);
+                    }
+                }
+
+                map.elements = elements;
+
+                return map;
+            }
+
+            function saveMap(){
+                const result = mapToJSON("table");
+                console.log(JSON.stringify(result, null, 2));
+            }
+
+            function downloadJSON(data, filename) {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                saveAs(blob, filename)
+            }
+
+            // Create character buttons and break them into rows
+            const characterButtonsContainer = document.getElementById('characterButtons');
+            const buttonsPerRow = 5;  // Adjust as needed
+            let currentButtonRow;
+
+            customAlphabet.forEach((char, index) => {
+                if (index % buttonsPerRow === 0) {
+                    // Start a new row
+                    currentButtonRow = document.createElement('div');
+                    currentButtonRow.classList.add('button-row');
+                    characterButtonsContainer.appendChild(currentButtonRow);
+                }
+
+                const button = document.createElement('button');
+                button.textContent = char;
+                button.value = index;
+                button.addEventListener('click', handleCharButtonClick);
+                currentButtonRow.appendChild(button);
+            });
+
+            // Add event listeners for mouse press and release
+            document.addEventListener('mousedown', () => isMousePressed = true);
+            document.addEventListener('mouseup', () => isMousePressed = false);
+            document.getElementById("resizeMapButton").addEventListener("click", resizeMap);
+            document.getElementById('save').addEventListener('click', function() {
+                const tableId = "map";
+                const jsonData = mapToJSON(tableId);
+                downloadJSON(jsonData, 'map.json');
+            });
+
+
+            initializeTable(mapWidth, mapHeight);
+        });
+    </script>
+    <title>Level editor</title>
+</head>
+<body>
+    <div id="characterButtons"></div>
+    <table id="map"></table>
+    <div>
+        <input type="number" id="width" placeholder="W">
+        x
+        <input type="number" id="height" placeholder="H">
+        <button id="resizeMapButton">Resize</button>
+    </div>
+    <button id="save">Save</button>
+</body>
+</html>

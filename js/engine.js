@@ -75,38 +75,29 @@ const MOVES = {
 class Game {
     static player;
     static count = 0;
-    
-    static initialize(mapSize, refreshRate) {
+
+    static initialize(refreshRate) {
+        // initialize world based on map data
+        const mapSize = new Position(mapDataJSON.size.x, mapDataJSON.size.y);
         World.initialize(mapSize);
         Screen.initialize(mapSize);
+
         Controller.initialize();
         Game.player = new Player();
 
         const elements = {
             'p': () => Game.player,
             'w': () => new Wall(),
-            'b': () => new Box(),
-
+            'b': () => new Box(), 
         }
+        
         // Inserting elements into the map
-        const walls = [
-            ['w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w', 'w'],
-            ['w', '-', '-', '-', '-', '-', '-', '-', '-', 'w'],
-            ['w', '-', 'w', '-', '-', 'w', '-', 'w', '-', 'w'],
-            ['w', '-', 'w', '-', 'w', 'w', '-', 'w', '-', 'w'],
-            ['w', '-', 'w', '-', 'p', '-', '-', '-', '-', 'w'],
-            ['w', '-', 'w', '-', 'b', '-', '-', '-', '-', 'w'],
-            ['w', '-', '-', '-', 'b', 'b', '-', '-', '-', 'w'],
-            ['w', '-', '-', '-', 'b', '-', '-', '-', '-', 'w'],
-            ['w', '-', '-', '-', '-', '-', '-', '-', '-', 'w'],
-            ['w', '-', '-', '-', '-', '-', '-', '-', '-', 'w'],
-
-        ].forEach((row, j) => row.forEach((cell, i) => {
-            if (cell in elements) {
-                World.setElement(elements[cell](), new Position(i, mapSize.y - 1 - j));
-            }
-        }))
-
+        mapDataJSON.elements.forEach((element) => {
+            const createElement = elements[element.type]();
+            console.log(createElement);
+            World.setElement(createElement, new Position(element.position.x, mapSize.y - 1 - element.position.y));
+        });
+        
         setInterval(Game.updateGame, refreshRate)
     }
 
@@ -123,4 +114,4 @@ class Game {
     }
 }
 
-Game.initialize(new Position(10, 10), 100);
+Game.initialize(100);

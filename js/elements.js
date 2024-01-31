@@ -27,6 +27,9 @@ class MovingElement extends WorldElement {
         let element = World.getElement(newPosition);
 
         if (!World.inMap(newPosition)) { return false }
+        
+        // check if place we want to move into is free
+        // if not, propagate move if chained is true
         if (!element || chained && element.move(vector)) {
             World.setElement(this, newPosition);
             return true;
