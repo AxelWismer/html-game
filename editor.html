@@ -5,6 +5,7 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=PT+Mono">
     <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
+    <script src="js/elements.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -55,13 +56,16 @@
             let mapWidth = 10;
             let mapHeight = 10;
 
-            // const customAlphabet = [
+            // const alphabet = [
             //     "█", "▓", "▒", "░", " ",
             //     "☐", "▣", "⧖", "⊞",
             //     "☺",
             //     "═", "║", "╗", "╝", "╚", "╔", "⥥", "▲", "▼"];
 
-            const customAlphabet = ["-", "w", "b", "p"];
+            const alphabet = Object.keys(ELEMENTS);
+            // add empty
+            alphabet.unshift('-')
+
             var selectedCharIndex = 0;
 
             let isMousePressed = false; // Added variable to track mouse press
@@ -71,7 +75,7 @@
                 if (isMousePressed) {
                     const colIndex = this.cellIndex;
                     const cells = Array.from(document.querySelectorAll(`td:nth-child(${colIndex + 1})`)).slice(1);
-                    cells.forEach(cell => cell.textContent = customAlphabet[selectedCharIndex]);
+                    cells.forEach(cell => cell.textContent = alphabet[selectedCharIndex]);
                 }
             }
 
@@ -81,14 +85,14 @@
                     const rowIndex = this.parentNode.rowIndex;
                     const rows = document.querySelectorAll('tr');
                     const cells = rows[rowIndex].querySelectorAll('td:not(:first-child)');
-                    cells.forEach(cell => cell.textContent = customAlphabet[selectedCharIndex]);
+                    cells.forEach(cell => cell.textContent = alphabet[selectedCharIndex]);
                 }
             }
 
             // Function to handle hover events for other cells
             function handleCellHover() {
                 if (isMousePressed) {
-                    this.textContent = customAlphabet[selectedCharIndex];
+                    this.textContent = alphabet[selectedCharIndex];
                 }
             }
 
@@ -125,7 +129,7 @@
                             cell.addEventListener('mousemove', handleLeftColumnHover); // Change to mousemove
                         } else {
                             // Add the main grid cells
-                            cell.textContent = customAlphabet[0]; // Initialize with the first character
+                            cell.textContent = alphabet[0]; // Initialize with the first character
                             cell.addEventListener('mousemove', handleCellHover); // Change to mousemove
                         }
 
@@ -164,8 +168,8 @@
                     const cell = table.rows[row].cells[col];
                     const cellValue = cell.innerText || cell.textContent;
 
-                    // TODO: make customAlphabet hold this data
-                    if(cellValue === customAlphabet[0]){
+                    // TODO: make alphabet hold this data
+                    if(cellValue === alphabet[0]){
                         continue;
                     }
 
@@ -201,7 +205,7 @@
             const buttonsPerRow = 5;  // Adjust as needed
             let currentButtonRow;
 
-            customAlphabet.forEach((char, index) => {
+            alphabet.forEach((char, index) => {
                 if (index % buttonsPerRow === 0) {
                     // Start a new row
                     currentButtonRow = document.createElement('div');

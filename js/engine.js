@@ -85,15 +85,9 @@ class Game {
         Controller.initialize();
         Game.player = new Player();
 
-        const elements = {
-            'p': () => Game.player,
-            'w': () => new Wall(),
-            'b': () => new Box(), 
-        }
-        
         // Inserting elements into the map
         mapDataJSON.elements.forEach((element) => {
-            const createElement = elements[element.type]();
+            const createElement = ELEMENTS[element.type]();
             console.log(createElement);
             World.setElement(createElement, new Position(element.position.x, mapSize.y - 1 - element.position.y));
         });

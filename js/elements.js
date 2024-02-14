@@ -64,3 +64,9 @@ class Box extends MovingElement {
         return super.move(vector)
     }
 }
+
+const ELEMENTS = {
+    'p': () => Game.player,
+    'w': () => new Wall(),
+    'b': () => new Box(), 
+}
