@@ -6,6 +6,7 @@
           href="https://fonts.googleapis.com/css?family=PT+Mono">
     <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
     <script src="js/elements.js"></script>
+    <script src="js/map.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -50,11 +51,28 @@
             margin: 5px;  /* Adjust margin for better spacing */
             cursor: pointer;
         }
+
+        .input-group {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            text-align: center;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const table = document.getElementById("map");
+            const loadedMap = { 
+                layers: {
+                    "0": []
+                }
+            };
             let mapWidth = 10;
             let mapHeight = 10;
+            let currentLayer = 0;
 
             // const alphabet = [
             //     "█", "▓", "▒", "░", " ",
@@ -108,7 +126,6 @@
                     table.removeChild(table.firstChild);
                 }
 
-
                 // Initialize the table structure
                 for (let i = 0; i < verticalCellCount + 1; i++) {
                     const row = document.createElement('tr');
@@ -153,15 +170,58 @@
                 initializeTable(mapWidth, mapHeight);
             }
 
-            function mapToJSON(tableId) {
-                const table = document.getElementById(tableId);
-                const map = {
-                    size: {
-                        x: mapWidth,
-                        y: mapHeight
+            function loadMap(){
+                initializeTable(mapDataJSON.size.x, mapDataJSON.size.y);
+                mapDataJSON.elements.forEach(element => {
+                    layer = element.position.z.toString();
+                    if(!loadedMap.layers[layer]){
+                        loadedMap.layers[layer] = []
+                    }
+                    loadedMap.layers[element.position.z.toString()].push({
+                        ...element
+                    });
+                });
+
+                drawLayer(currentLayer);
+            }
+
+            function cleanTable(){
+                for (let row = 1; row < table.rows.length; row++) {
+                    for (let col = 1; col < table.rows[row].cells.length; col++) {
+                        const cell = table.rows[row].cells[col];
+                        cell.innerText = alphabet[0]
                     }
                 }
-                
+            }
+
+            function drawLayer(layer){
+                cleanTable();
+
+                currentLayer = layer;
+                loadedMap.layers[layer]?.forEach(element => {
+                    table.rows[element.position.y + 1].cells[element.position.x + 1].textContent = element.type;
+                });
+            }
+
+            function drawNextLayer() {
+                var layerInput = document.getElementById('layerInput');
+                layer = parseInt(layerInput.value) + 1;
+                layerInput.value = layer;
+
+                saveTableToLayer(currentLayer);
+                drawLayer(layer);
+            }
+
+            function drawPreviousLayer() {
+                var layerInput = document.getElementById('layerInput');
+                layer = parseInt(layerInput.value) - 1;
+                layerInput.value = layer;
+
+                saveTableToLayer(currentLayer);
+                drawLayer(layer);
+            }
+
+            function saveTableToLayer(layer){
                 const elements = [];
                 for (let row = 1; row < table.rows.length; row++) {
                     for (let col = 1; col < table.rows[row].cells.length; col++) {
@@ -178,6 +238,7 @@
                         position: {
                         x: col - 1, // Adjust index to start from 1 instead of 0
                         y: row - 1,
+                        z: layer
                         }
                     };
 
@@ -185,8 +246,24 @@
                     }
                 }
 
-                map.elements = elements;
+                loadedMap.layers[layer] = elements;
+            }
 
+            function mapToJSON(tableId) {
+                saveTableToLayer(currentLayer);
+
+                const map = {
+                    size: {
+                        x: mapWidth,
+                        y: mapHeight
+                    }
+                };
+                
+                const elements = [];
+                elements.push(...Object.values(loadedMap.layers).flat(1))
+
+                map.elements = elements;
+                
                 return map;
             }
 
@@ -223,6 +300,8 @@
             // Add event listeners for mouse press and release
             document.addEventListener('mousedown', () => isMousePressed = true);
             document.addEventListener('mouseup', () => isMousePressed = false);
+            document.getElementById("nextLayerButton").addEventListener("click", drawNextLayer);
+            document.getElementById("previousLayerButton").addEventListener("click", drawPreviousLayer);
             document.getElementById("resizeMapButton").addEventListener("click", resizeMap);
             document.getElementById('save').addEventListener('click', function() {
                 const tableId = "map";
@@ -230,8 +309,7 @@
                 downloadJSON(jsonData, 'map.json');
             });
 
-
-            initializeTable(mapWidth, mapHeight);
+            loadMap()
         });
     </script>
     <title>Level editor</title>
@@ -239,12 +317,20 @@
 <body>
     <div id="characterButtons"></div>
     <table id="map"></table>
+    <br/>
+    <div class="input-group">
+        Layer:
+        <button id="previousLayerButton" class="btn">-</button>
+        <input type="number" id="layerInput" value="0" disabled>
+        <button id="nextLayerButton" class="btn">+</button>
+    </div>
     <div>
         <input type="number" id="width" placeholder="W">
         x
         <input type="number" id="height" placeholder="H">
         <button id="resizeMapButton">Resize</button>
     </div>
+    <br/>
     <button id="save">Save</button>
 </body>
 </html>
