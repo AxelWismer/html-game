@@ -31,8 +31,9 @@ class World {
         return World.elementToPosition[worldElement.getId()];
     }
 
-    static getPositions() {
-        return Object.values(World.elementToPosition).map(position => {
+    static getSurroundingElements(centralPosition, distance) {
+        const positions = Position.getSurroundingPositions(centralPosition, distance)
+        return positions.map(position => {
             return [World.getElement(position), position]
         });
     }
@@ -126,7 +127,7 @@ class Game {
         // initialize world based on map data
         const mapSize = new Position(mapDataJSON.size.x, mapDataJSON.size.y);
         World.initialize(mapSize);
-        Screen.initialize(mapSize);
+        Screen.initialize(new Position(5, 5));
 
         Controller.initialize();
         Game.player = new Player();
