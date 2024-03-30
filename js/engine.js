@@ -63,6 +63,52 @@ class World {
     }
 }
 
+class InteractionManager {
+    // move colliderElement into collidedElement
+    static move(colliderElement, collidedElement, vector){
+        const targetPosition = collidedElement.getPosition();
+        if(InteractionManager.resolveCollision(collidedElement, vector)){
+            World.setElement(colliderElement, targetPosition);
+        }
+    }
+
+    static COLLISIONS = {
+        Player: {
+            Box: this.move
+        }
+    }
+
+    /**
+     * resolve collision
+     * @param {*} colliderElement 
+     * @param {*} vector 
+     * @returns whether something happened or not
+     */
+    static resolveCollision(colliderElement, vector) {
+        const targetPosition = colliderElement.getPosition().add(vector);
+        // avoid moving outside the map
+        if (!World.inMap(targetPosition)) { 
+            return false 
+        }
+        
+        // move if free
+        if(World.positionIsFree(targetPosition)){
+            World.setElement(colliderElement, targetPosition);
+            return true;
+        }
+
+        // if not, decide based on classes
+        const collidedElement = World.getElement(targetPosition);
+        const outcome = InteractionManager.COLLISIONS[colliderElement.constructor.name]?.[collidedElement.constructor.name];
+
+        if(!outcome){
+            return false;
+        }
+
+        return outcome(colliderElement, collidedElement, vector)
+    }
+}
+
 const MOVES = {
     '': new Position(0, 0),
     undefined: new Position(0, 0),
@@ -108,4 +154,4 @@ class Game {
     }
 }
 
-Game.initialize(100);
+Game.initialize(60);

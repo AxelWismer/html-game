@@ -22,19 +22,13 @@ class MovingElement extends WorldElement {
         super(symbol);
     }
 
-    move(vector, chained = false) {
-        let newPosition = this.getPosition().add(vector);
-        let element = World.getElement(newPosition);
-
-        if (!World.inMap(newPosition)) { return false }
-        
-        // check if place we want to move into is free
-        // if not, propagate move if chained is true
-        if (!element || chained && element.move(vector)) {
-            World.setElement(this, newPosition);
-            return true;
-        }
-        return false;
+    /**
+     * move element in direction VECTOR
+     * @param {*} vector direction
+     * @returns if movement is successful
+     */
+    move(vector) {
+        return InteractionManager.resolveCollision(this, vector)
     }
 }
 
