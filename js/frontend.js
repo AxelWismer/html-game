@@ -6,11 +6,18 @@ class Screen {
     }
 
     static getScreen() {
-        const distance = Screen.screenSize.x;
+        const screenCenter = new Position(5,5,0);
+        const distance = Math.floor(Screen.screenSize.x / 2);
+
         const element = document.querySelector(":root").style.setProperty('--tuvieja', distance * 2 + 1)
         let draw = Array(Screen.screenSize.y).fill().map(() => Array(Screen.screenSize.x).fill())
-        World.getSurroundingElements(new Position(5,5,0), distance).forEach(([element, position]) => {
-            draw[Screen.screenSize.y - 1 - position.y][position.x] = element?.symbol;
+
+        const screenTopLeftWorldPosition = screenCenter.substract(new Position(distance, distance, 0));
+
+        World.getSurroundingElements(screenCenter, distance).forEach(([element, position]) => {
+            // transform world position to screen position
+            const screenPosition = position.substract(screenTopLeftWorldPosition);
+            draw[Screen.screenSize.y - 1 - screenPosition.y][screenPosition.x] = element?.symbol;
         });
         return draw
     }

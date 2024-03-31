@@ -21,6 +21,10 @@ class Position {
         return new Position(position.x - this.x, position.y - this.y, position.z - this.z)
     }
 
+    substract(position){
+        return new Position(this.x - position.x, this.y - position.y, this.z - position.z)
+    }
+
     vector() {
         return new Position(Math.sign(this.x), Math.sign(this.y));
     }
