@@ -127,7 +127,7 @@ class Game {
         // initialize world based on map data
         const mapSize = new Position(mapDataJSON.size.x, mapDataJSON.size.y);
         World.initialize(mapSize);
-        Screen.initialize(new Position(7, 7));
+        Screen.initialize(new Position(5, 5));
 
         Controller.initialize();
         Game.player = new Player();
