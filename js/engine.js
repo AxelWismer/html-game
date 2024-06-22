@@ -38,6 +38,19 @@ class World {
         });
     }
 
+    /**
+     * Function that return an array of all the elements in the area marked between 2 positions
+     @param {Position} bottomLeft 
+     * @param {Position} topRight 
+     * @returns {Position[]}
+     */
+    static getElementsWithin(bottomLeft, topRight) {
+        const positions = Position.getPositionsWithin(bottomLeft, topRight)
+        return positions.map(position => {
+            return [World.getElement(position), position]
+        });
+    }
+
     static inMap(position) {
         return position.x >= 0 && position.x < World.mapSize.x
             && position.y >= 0 && position.y < World.mapSize.y;
@@ -127,7 +140,8 @@ class Game {
         // initialize world based on map data
         const mapSize = new Position(mapDataJSON.size.x, mapDataJSON.size.y);
         World.initialize(mapSize);
-        Screen.initialize(new Position(5, 5));
+        
+        Screen.initialize(new Position(10, 10));
 
         Controller.initialize();
         Game.player = new Player();
@@ -135,7 +149,6 @@ class Game {
         // Inserting elements into the map
         mapDataJSON.elements.forEach((element) => {
             const createElement = ELEMENTS[element.type]();
-            console.log(createElement);
             World.setElement(createElement, new Position(element.position.x, mapSize.y - 1 - element.position.y));
         });
         

@@ -6,15 +6,19 @@ class Screen {
     }
 
     static getScreen() {
-        const screenCenter = new Position(5,5,0);
-        const distance = Math.floor(Screen.screenSize.x / 2);
+        const screenCenter = new Position(5,5,1);
+        const distanceToCenter = new Position(Math.floor(Screen.screenSize.x / 2), Math.floor(Screen.screenSize.y / 2))
+        const screenTopLeftWorldPosition = screenCenter.substract(distanceToCenter);
+        const screenBottomRightWorldPosition = screenTopLeftWorldPosition.add(Screen.screenSize).substract(new Position(1, 1));
 
-        const element = document.querySelector(":root").style.setProperty('--tuvieja', distance * 2 + 1)
+        // Set number of columns in html template
+        document.querySelector(":root").style.setProperty('--column-var', Screen.screenSize.x)
+
+        // Draw is an array of all the cells to be filled with the element sprites
         let draw = Array(Screen.screenSize.y).fill().map(() => Array(Screen.screenSize.x).fill())
 
-        const screenTopLeftWorldPosition = screenCenter.substract(new Position(distance, distance, 0));
-
-        World.getSurroundingElements(screenCenter, distance).forEach(([element, position]) => {
+        // Fill the draw array with the elements in the world
+        World.getElementsWithin(screenTopLeftWorldPosition, screenBottomRightWorldPosition).forEach(([element, position]) => {
             // transform world position to screen position
             const screenPosition = position.substract(screenTopLeftWorldPosition);
             draw[Screen.screenSize.y - 1 - screenPosition.y][screenPosition.x] = element?.symbol;

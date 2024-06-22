@@ -1,5 +1,5 @@
 :root {
-  --tuvieja: 10
+  --column-var: 10
 }
 html {
   height: 100%;
@@ -9,7 +9,7 @@ html {
 }
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(var(--tuvieja), 1fr); /* 10 columns with equal width */
+  grid-template-columns: repeat(var(--column-var), 1fr); /* 10 columns with equal width */
   /* Gap between grid items */
   width: 90vw;
   max-width: 90vh;

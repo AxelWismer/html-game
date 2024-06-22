@@ -38,4 +38,22 @@ class Position {
         }
         return positions;
     }
+
+    /**
+     * Function that return an array of all the positions in the area marked between 2 positions
+     * @param {Position} bottomLeft 
+     * @param {Position} topRight 
+     * @returns {Position[]}
+     */
+    static getPositionsWithin(bottomLeft, topRight) {
+        const positions = []
+        for (let x = bottomLeft.x; x <= topRight.x; x++) {
+            for (let y = bottomLeft.y; y <= topRight.y; y++) {
+                positions.push(new Position(x, y, bottomLeft.z));
+            }
+        }
+        return positions;
+    }
+
+    
 }
