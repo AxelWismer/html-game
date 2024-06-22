@@ -127,13 +127,16 @@ class InteractionManager {
     }
 }
 
-const MOVES = {
+const PLAYER_MOVES = {
     '': new Position(0, 0),
-    undefined: new Position(0, 0),
     'ArrowUp': new Position(0, 1),
     'ArrowDown': new Position(0, -1),
     'ArrowLeft': new Position(-1, 0),
-    'ArrowRight': new Position(1, 0)
+    'ArrowRight': new Position(1, 0),
+    'w': new Position(0, 1),
+    's': new Position(0, -1),
+    'a': new Position(-1, 0),
+    'd': new Position(1, 0)
 }
 
 class Game {
@@ -162,8 +165,11 @@ class Game {
     static updateGame() {
         const input = Controller.readActions();
         // Recieve actions from the user from the keyboard
-        if (input) { 
-            World.player.move(MOVES[input]) 
+        if (input) {
+            // Check if the key relates to the player movement
+            if (Object.hasOwn(PLAYER_MOVES, input)) {
+                World.player.move(PLAYER_MOVES[input]) 
+            }
         }
         
         // Update screen
