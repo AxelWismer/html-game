@@ -6,7 +6,7 @@ class Screen {
     }
 
     static getScreen() {
-        const screenCenter = new Position(5,5,1);
+        const screenCenter = new Position(5,5,0);
         const distanceToCenter = new Position(Math.floor(Screen.screenSize.x / 2), Math.floor(Screen.screenSize.y / 2))
         const screenTopLeftWorldPosition = screenCenter.substract(distanceToCenter);
         const screenBottomRightWorldPosition = screenTopLeftWorldPosition.add(Screen.screenSize).substract(new Position(1, 1));
