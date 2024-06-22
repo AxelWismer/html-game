@@ -149,7 +149,7 @@ class Game {
         // Inserting elements into the map
         mapDataJSON.elements.forEach((element) => {
             const createElement = ELEMENTS[element.type]();
-            World.setElement(createElement, new Position(element.position.x, mapSize.y - 1 - element.position.y));
+            World.setElement(createElement, new Position(element.position.x, mapSize.y - 1 - element.position.y, element.position.z));
         });
         
         setInterval(Game.updateGame, refreshRate)
