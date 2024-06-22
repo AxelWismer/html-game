@@ -73,7 +73,11 @@ class World {
     }
 
     static getPlayer() {
-        return World.getElements(Player)[0];
+        return World.player
+    }
+
+    static getPlayerPosition() {
+        return World.getPosition(World.player)
     }
 }
 
@@ -144,7 +148,7 @@ class Game {
         Screen.initialize(new Position(10, 10));
 
         Controller.initialize();
-        Game.player = new Player();
+        World.player = new Player();
 
         // Inserting elements into the map
         mapDataJSON.elements.forEach((element) => {
@@ -159,7 +163,7 @@ class Game {
         const input = Controller.readActions();
         // Recieve actions from the user from the keyboard
         if (input) { 
-            Game.player.move(MOVES[input]) 
+            World.player.move(MOVES[input]) 
         }
         
         // Update screen

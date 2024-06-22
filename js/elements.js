@@ -60,7 +60,7 @@ class Box extends MovingElement {
 }
 
 const ELEMENTS = {
-    'p': () => Game.player,
+    'p': () => World.player,
     'w': () => new Wall(),
     'b': () => new Box(), 
 }
