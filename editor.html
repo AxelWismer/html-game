@@ -177,6 +177,9 @@
                     if(!loadedMap.layers[layer]){
                         loadedMap.layers[layer] = []
                     }
+                    let { position } = element;
+                    position.y = mapDataJSON.size.y - 1 - position.y;
+                    console.log(position);
                     loadedMap.layers[element.position.z.toString()].push({
                         ...element
                     });
@@ -237,7 +240,7 @@
                         type: cellValue.trim(),
                         position: {
                         x: col - 1, // Adjust index to start from 1 instead of 0
-                        y: row - 1,
+                        y: table.rows.length - 1 - row ,
                         z: layer
                         }
                     };
